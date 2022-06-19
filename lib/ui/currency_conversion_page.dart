@@ -1,4 +1,4 @@
-import 'package:currency_converter/currency_converter_component.dart';
+import 'package:currency_converter/converter/currency_converter_component.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -71,7 +71,7 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           final amount = double.parse(amountController.text);
-                          component.convert(amount);
+                          component.convert(from: 'EUR', to: 'JPY', amount: amount);
                         }
                       },
                       child: const Text('convert')),
