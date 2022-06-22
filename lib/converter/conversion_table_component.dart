@@ -2,29 +2,21 @@ import 'dart:async';
 
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_repository.dart';
-import 'package:currency_converter/converter/model/conversion_event.dart';
-import 'package:currency_converter/converter/model/conversion_result_event.dart';
-import 'package:currency_converter/converter/model/conversion_table_event.dart';
 import 'package:currency_converter/converter/model/currency.dart';
 import 'package:currency_converter/ui/conversion_table.dart';
 import 'package:rxdart/rxdart.dart';
 
-class CurrencyConverterComponent {
-  final BehaviorSubject<ConversionEvent> subject = BehaviorSubject();
+class ConversionTableComponent {
+  final subject = BehaviorSubject<ConversionData>();
+
+  Stream<ConversionData> get conversionTableObservable => subject.stream;
+
   final CurrencyRepository _repository;
   final CurrencyConverter _converter;
 
-  Stream<ConversionEvent> get currencyValueObservable => subject.stream;
-
-  CurrencyConverterComponent({repository, converter}) : _repository = repository ?? CurrencyRepository(), _converter = converter ?? CurrencyConverter(currency: Currency.euro());
-
-  Future<void> convert({required String from, required String to, required double amount}) async {
-    final currency = await _repository.getCurrencyForCode(from);
-    _converter.currency = currency;
-    final result = _converter.convert(to: to, amount: amount);
-
-    subject.add(ConversionResultEvent(convertedAmount: result));
-  }
+  ConversionTableComponent({repository, converter})
+      : _repository = repository ?? CurrencyRepository(),
+        _converter = converter ?? CurrencyConverter(currency: Currency.euro());
 
   Future<void> generateTable({required String from, required String to}) async {
     final currency = await _repository.getCurrencyForCode(from);
@@ -44,7 +36,7 @@ class CurrencyConverterComponent {
               left: 10000, right: _converter.convert(to: to, amount: 10000)),
         ],
         to: to);
-    subject.add(ConversionTableEvent(conversionTable: result));
+    subject.add(result);
   }
 
   Future<void> dispose() async {

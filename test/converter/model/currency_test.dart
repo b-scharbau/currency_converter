@@ -12,30 +12,4 @@ void main() {
         description: 'Euro',
         exchangeRates: {'JPY': 140.881056});
   });
-
-  group('convert', () {
-    group('positive value', () {
-      test('Correctly converts value', () async {
-        final result = instance.convert(to: 'JPY', amount: 100.0);
-
-        expect(result, 14088.1056);
-      });
-    });
-
-    group('zero', () {
-      test('Correctly converts value', () async {
-        final result = instance.convert(to: 'JPY', amount: 0.0);
-
-        expect(result, 0.0);
-      });
-    });
-
-    group('negative value', () {
-      test('Correctly converts value', () async {
-        final result = instance.convert(to: 'JPY', amount: -100.0);
-
-        expect(result, -14088.1056);
-      });
-    });
-  });
 }

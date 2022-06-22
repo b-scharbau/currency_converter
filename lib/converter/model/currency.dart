@@ -27,8 +27,4 @@ class Currency {
   final DateTime date;
   final String description;
   final Map<String, double> exchangeRates;
-
-  double convert({required String to, required double amount}) {
-    return amount * exchangeRates[to]!;
-  }
 }
