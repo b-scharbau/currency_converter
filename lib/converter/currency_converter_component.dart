@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_repository.dart';
+import 'package:currency_converter/converter/model/conversion_currency_event.dart';
 import 'package:currency_converter/converter/model/conversion_event.dart';
 import 'package:currency_converter/converter/model/conversion_result_event.dart';
 import 'package:currency_converter/converter/model/conversion_table_event.dart';
 import 'package:currency_converter/converter/model/currency.dart';
-import 'package:currency_converter/ui/conversion_table.dart';
+import 'package:currency_converter/ui/conversion_table_widget.dart';
+import 'package:currency_converter/ui/model/conversion_table.dart';
+import 'package:currency_converter/ui/model/currency_symbol.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CurrencyConverterComponent {
@@ -26,25 +29,35 @@ class CurrencyConverterComponent {
     subject.add(ConversionResultEvent(convertedAmount: result));
   }
 
-  Future<void> generateTable({required String from, required String to}) async {
-    final currency = await _repository.getCurrencyForCode(from);
+  Future<void> generateTable({required CurrencySymbol from, required CurrencySymbol to}) async {
+    final currency = await _repository.getCurrencyForCode(from.code);
     _converter.currency = currency;
 
-    final result = ConversionData(
+    final result = ConversionTable(
         from: from,
         rowData: [
-          ConversionRow(left: 1, right: _converter.convert(to: to, amount: 1)),
+          ConversionRow(left: 1, right: _converter.convert(to: to.code, amount: 1)),
           ConversionRow(
-              left: 10, right: _converter.convert(to: to, amount: 10)),
+              left: 10, right: _converter.convert(to: to.code, amount: 10)),
           ConversionRow(
-              left: 100, right: _converter.convert(to: to, amount: 100)),
+              left: 100, right: _converter.convert(to: to.code, amount: 100)),
           ConversionRow(
-              left: 1000, right: _converter.convert(to: to, amount: 1000)),
+              left: 1000, right: _converter.convert(to: to.code, amount: 1000)),
           ConversionRow(
-              left: 10000, right: _converter.convert(to: to, amount: 10000)),
+              left: 10000, right: _converter.convert(to: to.code, amount: 10000)),
         ],
         to: to);
     subject.add(ConversionTableEvent(conversionTable: result));
+  }
+
+  void getAvailableCurrencies() {
+    final result = [
+      CurrencySymbol.dollar(),
+      CurrencySymbol.euro(),
+      CurrencySymbol.yen()
+    ];
+
+    subject.add(ConversionCurrencyEvent(currencyList: result));
   }
 
   Future<void> dispose() async {

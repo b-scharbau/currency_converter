@@ -1,8 +1,11 @@
 import 'package:currency_converter/converter/currency_converter_component.dart';
+import 'package:currency_converter/converter/model/conversion_currency_event.dart';
 import 'package:currency_converter/converter/model/conversion_event.dart';
 import 'package:currency_converter/converter/model/conversion_result_event.dart';
 import 'package:currency_converter/converter/model/conversion_table_event.dart';
-import 'package:currency_converter/ui/conversion_table.dart';
+import 'package:currency_converter/ui/conversion_table_widget.dart';
+import 'package:currency_converter/ui/model/conversion_table.dart';
+import 'package:currency_converter/ui/model/currency_symbol.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -21,15 +24,18 @@ class CurrencyConversionPage extends StatefulWidget {
 }
 
 class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
+  final _amountController = TextEditingController();
+  double _conversionAmount = 0.0;
+  late ConversionTable _conversionTable = ConversionTable(to: _targetCurrency, from: _activeCurrency, rowData: []);
   final _formKey = GlobalKey<FormState>();
-  final amountController = TextEditingController();
-
-  double conversionAmount = 0.0;
-  ConversionData conversionTable = ConversionData(to: 'JPY', from: 'EUR', rowData: []);
+  Function()? _selectActiveCurrency;
+  Function()? _selectTargetCurrency;
+  CurrencySymbol _activeCurrency = CurrencySymbol.euro();
+  CurrencySymbol _targetCurrency = CurrencySymbol.yen();
 
   @override
   void dispose() {
-    amountController.dispose();
+    _amountController.dispose();
 
     super.dispose();
   }
@@ -38,10 +44,31 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
   void initState() {
     super.initState();
 
-    widget.component.generateTable(from: 'EUR', to: 'JPY');
+    widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+    widget.component.getAvailableCurrencies();
 
     widget.component.currencyValueObservable.listen((event) {
       switch(event.type) {
+        case ConverterEventType.conversionCurrencyEvent:
+          _selectActiveCurrency = () async {
+            final newCurrency = await _showCurrencySelectDialog(event as ConversionCurrencyEvent);
+            if(newCurrency != null) {
+              setState(() {
+                _activeCurrency = newCurrency;
+                widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+              });
+            }
+          };
+          _selectTargetCurrency = () async {
+            final newCurrency = await _showCurrencySelectDialog(event as ConversionCurrencyEvent);
+            if(newCurrency != null) {
+              setState(() {
+                _targetCurrency = newCurrency;
+                widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+              });
+            }
+          };
+          break;
         case ConverterEventType.conversionResultEvent:
           _updateConversionResult((event as ConversionResultEvent).convertedAmount);
           break;
@@ -55,7 +82,7 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
   @override
   Widget build(BuildContext context) {
     final format =
-    NumberFormat.currency(locale: "ja_JP", symbol: '¥');
+    NumberFormat.currency(locale: _targetCurrency.locale, symbol: _targetCurrency.symbol);
 
     return Scaffold(
       appBar: AppBar(
@@ -69,43 +96,46 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Value to convert:',
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Text(
+                          'Value:',
                           style: TextStyle(fontSize: 16.0),
                         ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: amountController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Amount',
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _amountController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Amount',
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter some value';
+                                }
+                                return null;
+                              },
                             ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
                           ),
                         ),
-                      )
-                    ],
+                        ElevatedButton(
+                            onPressed: _selectActiveCurrency,
+                            child: Text(_activeCurrency.code)),
+                      ],
+                    ),
                   ),
                   ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          final amount = double.parse(amountController.text);
+                          final amount = double.parse(_amountController.text);
                           widget.component.convert(
-                              from: 'EUR', to: 'JPY', amount: amount);
+                              from: _activeCurrency.code, to: _targetCurrency.code, amount: amount);
                         }
                       },
                       child: const Text('convert')),
@@ -114,27 +144,55 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Converted value: ${format.format(conversionAmount)}',
-                style: const TextStyle(fontSize: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Converted value: ${format.format(_conversionAmount)}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  ElevatedButton(
+                      onPressed: _selectTargetCurrency,
+                      child: Text(_targetCurrency.code)),
+                ],
               ),
             ),
-            ConversionTable(data: conversionTable)
+            ConversionTableWidget(data: _conversionTable)
           ],
         ),
       ),
     );
   }
 
+  Future<CurrencySymbol?> _showCurrencySelectDialog(ConversionCurrencyEvent event) async {
+    return showDialog<CurrencySymbol>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select currency'),
+            children: <Widget>[
+              ...(event).currencyList.map((
+                  currency) =>
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, currency);
+                    },
+                    child: Text('${currency.description} (${currency.code})'),
+                  ))
+            ],
+          );
+        });
+  }
+
   void _updateConversionResult(double convertedAmount) {
     setState(() {
-      conversionAmount = convertedAmount;
+      _conversionAmount = convertedAmount;
     });
   }
 
-  void _updateConversionTable(ConversionData conversionTable) {
+  void _updateConversionTable(ConversionTable conversionTable) {
     setState(() {
-      this.conversionTable = conversionTable;
+      _conversionTable = conversionTable;
     });
   }
 }

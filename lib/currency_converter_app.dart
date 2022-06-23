@@ -1,4 +1,3 @@
-import 'package:currency_converter/converter/conversion_table_component.dart';
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_converter_component.dart';
 import 'package:currency_converter/converter/model/currency.dart';
@@ -20,7 +19,7 @@ class CurrencyConverterApp extends StatelessWidget {
       ),
       home: CurrencyConversionPage(
         component: CurrencyConverterComponent(converter: converter),
-        title: 'Flutter Demo Home Page',
+        title: 'Currency Converter',
       ),
     );
   }

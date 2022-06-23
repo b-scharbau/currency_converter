@@ -1,32 +1,33 @@
+import 'package:currency_converter/ui/model/conversion_table.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ConversionTable extends StatelessWidget {
-  const ConversionTable({Key? key, required this.data}) : super(key: key);
+class ConversionTableWidget extends StatelessWidget {
+  const ConversionTableWidget({Key? key, required this.data}) : super(key: key);
 
-  final ConversionData data;
+  final ConversionTable data;
 
   @override
   Widget build(BuildContext context) {
     final fromFormat =
-    NumberFormat.currency(locale: "de_DE", symbol: '€');
+    NumberFormat.currency(locale: data.from.locale, symbol: data.from.symbol);
     final toFormat =
-    NumberFormat.currency(locale: "ja_JP", symbol: '¥');
+    NumberFormat.currency(locale: data.to.locale, symbol: data.to.symbol);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Table(
         border: TableBorder.all(),
         children: [
-          const TableRow(
+          TableRow(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('EUR'),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(data.from.code),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('JPY'),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(data.to.code),
                 )
               ]
           ),
@@ -46,19 +47,4 @@ class ConversionTable extends StatelessWidget {
       ),
     );
   }
-}
-
-class ConversionData {
-  ConversionData({required this.from, required this.rowData, required this.to});
-
-  final String from;
-  final List<ConversionRow> rowData;
-  final String to;
-}
-
-class ConversionRow {
-  ConversionRow({required this.left, required this.right});
-
-  final double left;
-  final double right;
 }
