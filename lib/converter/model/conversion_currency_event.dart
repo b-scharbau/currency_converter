@@ -5,5 +5,5 @@ class ConversionCurrencyEvent extends ConversionEvent {
   List<CurrencySymbol> currencyList;
 
   ConversionCurrencyEvent({required this.currencyList})
-      : super(type: ConverterEventType.conversionCurrencyEvent);
+      : super(type: ConversionEventType.conversionCurrencyEvent);
 }

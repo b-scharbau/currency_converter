@@ -1,30 +1,32 @@
 class CurrencySymbol {
   CurrencySymbol(
       {required this.code,
-      required this.description,
-      required this.locale,
-      required this.symbol});
+      required this.description});
 
   final String code;
   final String description;
-  final String locale;
-  final String symbol;
 
   CurrencySymbol.dollar()
       : code = 'USD',
-        description = 'United States Dollar',
-        locale = 'en_US',
-        symbol = '\$';
+        description = 'United States Dollar';
 
   CurrencySymbol.euro()
       : code = 'EUR',
-        description = 'Euro',
-        locale = 'de_DE',
-        symbol = '€';
+        description = 'Euro';
 
   CurrencySymbol.yen()
       : code = 'JPY',
-        description = 'Japanese Yen',
-        locale = 'ja_JP',
-        symbol = '¥';
+        description = 'Japanese Yen';
+
+  @override
+  bool operator ==(Object other) {
+    if(other is! CurrencySymbol) {
+      return false;
+    }
+
+    return other.code == code;
+  }
+
+  @override
+  int get hashCode => code.hashCode;
 }

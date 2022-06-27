@@ -5,7 +5,7 @@ class CurrencyConverter {
 
   Currency currency;
 
-  double convert({required String to, required double amount}) {
+  double convert({required double amount, required String to}) {
     return amount * currency.exchangeRates[to]!;
   }
 }

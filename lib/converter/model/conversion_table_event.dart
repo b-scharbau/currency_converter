@@ -4,7 +4,7 @@ import 'package:currency_converter/ui/model/conversion_table.dart';
 
 class ConversionTableEvent extends ConversionEvent {
   ConversionTableEvent({required this.conversionTable})
-      : super(type: ConverterEventType.conversionTableEvent);
+      : super(type: ConversionEventType.conversionTableEvent);
 
   ConversionTable conversionTable;
 }

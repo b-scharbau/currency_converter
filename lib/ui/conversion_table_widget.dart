@@ -9,10 +9,12 @@ class ConversionTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
+
     final fromFormat =
-    NumberFormat.currency(locale: data.from.locale, symbol: data.from.symbol);
+    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: data.from.code);
     final toFormat =
-    NumberFormat.currency(locale: data.to.locale, symbol: data.to.symbol);
+    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: data.to.code);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

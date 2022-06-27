@@ -1,16 +1,18 @@
+import 'package:currency_converter/ui/model/conversion_row.dart';
 import 'package:currency_converter/ui/model/currency_symbol.dart';
+import 'package:collection/collection.dart';
 
 class ConversionTable {
-  ConversionTable({required this.from, required this.rowData, required this.to});
+  ConversionTable(
+      {required this.from, required this.rowData, required this.to});
 
   final CurrencySymbol from;
   final List<ConversionRow> rowData;
   final CurrencySymbol to;
-}
 
-class ConversionRow {
-  ConversionRow({required this.left, required this.right});
-
-  final double left;
-  final double right;
+  bool equals(ConversionTable other) {
+    return (other.from.code == from.code &&
+        other.to.code == to.code &&
+        const ListEquality().equals(other.rowData, rowData));
+  }
 }

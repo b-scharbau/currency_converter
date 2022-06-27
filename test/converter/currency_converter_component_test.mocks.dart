@@ -4,6 +4,7 @@
 
 import 'dart:async' as _i4;
 
+import 'package:currency_converter/converter/currency_converter.dart' as _i5;
 import 'package:currency_converter/converter/currency_repository.dart' as _i3;
 import 'package:currency_converter/converter/model/currency.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
@@ -34,4 +35,30 @@ class MockCurrencyRepository extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getCurrencyForCode, [code]),
               returnValue: Future<_i2.Currency>.value(_FakeCurrency_0()))
           as _i4.Future<_i2.Currency>);
+  @override
+  _i4.Future<List<_i2.Currency>> getCurrencies() =>
+      (super.noSuchMethod(Invocation.method(#getCurrencies, []),
+              returnValue: Future<List<_i2.Currency>>.value(<_i2.Currency>[]))
+          as _i4.Future<List<_i2.Currency>>);
+}
+
+/// A class which mocks [CurrencyConverter].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCurrencyConverter extends _i1.Mock implements _i5.CurrencyConverter {
+  MockCurrencyConverter() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.Currency get currency => (super.noSuchMethod(Invocation.getter(#currency),
+      returnValue: _FakeCurrency_0()) as _i2.Currency);
+  @override
+  set currency(_i2.Currency? _currency) =>
+      super.noSuchMethod(Invocation.setter(#currency, _currency),
+          returnValueForMissingStub: null);
+  @override
+  double convert({double? amount, String? to}) => (super.noSuchMethod(
+      Invocation.method(#convert, [], {#amount: amount, #to: to}),
+      returnValue: 0.0) as double);
 }

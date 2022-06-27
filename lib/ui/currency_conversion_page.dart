@@ -44,18 +44,18 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
   void initState() {
     super.initState();
 
-    widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+    widget.component.generateConversionTable(from: _activeCurrency, to: _targetCurrency);
     widget.component.getAvailableCurrencies();
 
-    widget.component.currencyValueObservable.listen((event) {
+    widget.component.currencyEventObservable.listen((event) {
       switch(event.type) {
-        case ConverterEventType.conversionCurrencyEvent:
+        case ConversionEventType.conversionCurrencyEvent:
           _selectActiveCurrency = () async {
             final newCurrency = await _showCurrencySelectDialog(event as ConversionCurrencyEvent);
             if(newCurrency != null) {
               setState(() {
                 _activeCurrency = newCurrency;
-                widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+                widget.component.generateConversionTable(from: _activeCurrency, to: _targetCurrency);
               });
             }
           };
@@ -64,15 +64,15 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
             if(newCurrency != null) {
               setState(() {
                 _targetCurrency = newCurrency;
-                widget.component.generateTable(from: _activeCurrency, to: _targetCurrency);
+                widget.component.generateConversionTable(from: _activeCurrency, to: _targetCurrency);
               });
             }
           };
           break;
-        case ConverterEventType.conversionResultEvent:
+        case ConversionEventType.conversionResultEvent:
           _updateConversionResult((event as ConversionResultEvent).convertedAmount);
           break;
-        case ConverterEventType.conversionTableEvent:
+        case ConversionEventType.conversionTableEvent:
           _updateConversionTable((event as ConversionTableEvent).conversionTable);
           break;
       }
@@ -81,8 +81,9 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
     final format =
-    NumberFormat.currency(locale: _targetCurrency.locale, symbol: _targetCurrency.symbol);
+    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: _targetCurrency.code);
 
     return Scaffold(
       appBar: AppBar(
