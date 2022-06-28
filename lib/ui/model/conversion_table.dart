@@ -11,8 +11,10 @@ class ConversionTable {
   final CurrencySymbol to;
 
   bool equals(ConversionTable other) {
+    final rowEquality = ListEquality().equals(other.rowData, rowData);
+
     return (other.from.code == from.code &&
         other.to.code == to.code &&
-        const ListEquality().equals(other.rowData, rowData));
+        rowEquality);
   }
 }
