@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:currency_converter/converter/currency_converter.dart';
-import 'package:currency_converter/converter/currency_repository.dart';
+import 'package:currency_converter/converter/data/currency_repository.dart';
 import 'package:currency_converter/converter/model/conversion_currency_event.dart';
 import 'package:currency_converter/converter/model/conversion_event.dart';
 import 'package:currency_converter/converter/model/conversion_result_event.dart';
