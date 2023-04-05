@@ -18,7 +18,7 @@ class ConversionTableWidget extends StatelessWidget {
     NumberFormat.currency(locale: locale.toLanguageTag(), symbol: from.code);
     final toFormat =
     NumberFormat.currency(locale: locale.toLanguageTag(), symbol: to.code);
-    final dateFormat = DateFormat('d.MM.y', locale.toLanguageTag());
+    final dateFormat = DateFormat('dd.MM.y', locale.toLanguageTag());
 
     return Column(
       children: [

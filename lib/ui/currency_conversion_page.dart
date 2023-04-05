@@ -2,7 +2,6 @@ import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_converter_component.dart';
 import 'package:currency_converter/ui/model/currency.dart';
 import 'package:currency_converter/ui/conversion_table_widget.dart';
-import 'package:currency_converter/ui/model/conversion_table.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -23,7 +22,6 @@ class CurrencyConversionPage extends StatefulWidget {
 class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
   final _amountController = TextEditingController();
   double _conversionAmount = 0.0;
-  late ConversionTable _conversionTable = ConversionTable(to: _targetCurrency, from: _activeCurrency, rowData: []);
   final _formKey = GlobalKey<FormState>();
   Function()? _selectActiveCurrency;
   Function()? _selectTargetCurrency;
@@ -47,21 +45,23 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
     widget.component.currencyEventObservable.listen((event) {
       setState(() {
         _converter = event.converter;
+
         _selectTargetCurrency = () async {
           final newCurrency = await _showCurrencySelectDialog(_converter!.targetCurrencyList);
+
           if(newCurrency != null) {
             setState(() {
               _targetCurrency = newCurrency;
             });
           }
         };
+
         _selectActiveCurrency = () async {
           final newCurrency = await _showCurrencySelectDialog(_converter!.targetCurrencyList);
+
           if (newCurrency != null) {
             if (newCurrency.code == _targetCurrency.code) {
               _targetCurrency = _activeCurrency;
-            } else {
-              _targetCurrency = _converter!.targetCurrencyList.first;
             }
             _activeCurrency = newCurrency;
             widget.component.selectCurrency(code: _activeCurrency.code);
@@ -81,96 +81,98 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Text(
-                          'Value:',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _amountController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Amount',
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Text(
+                            'Value:',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: _amountController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Amount',
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some value';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (value) {
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      _conversionAmount = double.parse(_amountController.text);
+                                    });
+                                  }
+                                },
                               ),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter some value';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (value) {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _conversionAmount = double.parse(_amountController.text);
-                                  });
-                                }
-                              },
                             ),
                           ),
-                        ),
-                        ElevatedButton(
-                            onPressed: _selectActiveCurrency,
-                            child: Text(_activeCurrency.code)),
-                      ],
+                          ElevatedButton(
+                              onPressed: _selectActiveCurrency,
+                              child: Text(_activeCurrency.code)),
+                        ],
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            _conversionAmount = double.parse(_amountController.text);
-                          });
-                        }
-                      },
-                      child: const Text('convert')),
-                ],
+                    ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _conversionAmount = double.parse(_amountController.text);
+                            });
+                          }
+                        },
+                        child: const Text('convert')),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Converted value: ${format.format(_convert(_conversionAmount))}',
-                    style: const TextStyle(fontSize: 16.0),
-                  ),
-                  ElevatedButton(
-                      onPressed: _selectTargetCurrency,
-                      child: Text(_targetCurrency.code)),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Converted value: ${format.format(_convert(_conversionAmount))}',
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                    ElevatedButton(
+                        onPressed: _selectTargetCurrency,
+                        child: Text(_targetCurrency.code)),
+                  ],
+                ),
               ),
-            ),
-            Builder(
-              builder: (BuildContext context) {
-                if (_converter == null) {
-                  return const CircularProgressIndicator();
-                } else {
-                  return Column(
-                    children: [
-                      ConversionTableWidget(converter: _converter!, from: _activeCurrency, to: _targetCurrency),
-                    ],
-                  );
-                }
-              },
-            ),
-          ],
+              Builder(
+                builder: (BuildContext context) {
+                  if (_converter == null) {
+                    return const CircularProgressIndicator();
+                  } else {
+                    return Column(
+                      children: [
+                        ConversionTableWidget(converter: _converter!, from: _activeCurrency, to: _targetCurrency),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -194,18 +196,6 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
             ],
           );
         });
-  }
-
-  void _updateConversionResult(double convertedAmount) {
-    setState(() {
-      _conversionAmount = convertedAmount;
-    });
-  }
-
-  void _updateConversionTable(ConversionTable conversionTable) {
-    setState(() {
-      _conversionTable = conversionTable;
-    });
   }
 
   double _convert(double conversionAmount) {

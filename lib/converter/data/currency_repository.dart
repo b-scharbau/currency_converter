@@ -6,24 +6,12 @@ import 'package:currency_converter/ui/model/currency.dart';
 class CurrencyRepository {
   final Set<Currency> _currencyList = { Currency.dollar(), Currency.euro(), Currency.yen() };
 
-  // DataSource localDataSource;
+  DataSource remoteDataSource;
 
-  CurrencyRepository();
+  CurrencyRepository({required this.remoteDataSource});
 
   Future<Currency> getCurrencyForCode(String code) async {
-    var currency = _currencyList.where(
-            (element) => element.code == code);
-
-    if (currency.isNotEmpty) {
-      return currency.first;
-    }
-    return _currencyList.first;
-
-    // var transformer = CurrencyTransformer();
-    // var newCurrency = transformer.transform(await localDataSource.getCurrencyByCode(code));
-    //
-    // _currencyList.add(newCurrency);
-    // return newCurrency;
+    return remoteDataSource.getCurrencyByCode(code);
   }
 
   Future<List<Currency>> getCurrencies() async {

@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/data/currency_repository.dart';
 import 'package:currency_converter/converter/converter_event.dart';
+import 'package:currency_converter/converter/data/remote_data_source.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CurrencyConverterComponent {
   CurrencyConverterComponent({repository, converter})
-      : _repository = repository ?? CurrencyRepository();
+      : _repository = repository ?? CurrencyRepository(remoteDataSource: RemoteDataSource());
 
   Stream<ConverterEvent> get currencyEventObservable => _subject.stream;
 
@@ -17,7 +18,9 @@ class CurrencyConverterComponent {
   Future<void> selectCurrency({required String code}) async {
     final currency = await _repository.getCurrencyForCode(code);
     final currencyList = await _repository.getCurrencies();
-    currencyList.remove(currency);
+
+    currencyList.removeWhere((element) => element.code == code);
+
     CurrencyConverter converter = CurrencyConverter(currency: currency, targetCurrencyList: currencyList);
 
     _subject.add(ConverterEvent(converter: converter));
@@ -26,13 +29,4 @@ class CurrencyConverterComponent {
   Future<void> dispose() async {
     await _subject.close();
   }
-
-  // Future<void> getAvailableCurrencies() async {
-  //   final result = await _repository.getCurrencies();
-  //
-  //   _subject.add(ConversionCurrencyEvent(
-  //       currencyList: result.map((currency) => CurrencySymbol(
-  //           code: currency.code,
-  //           description: currency.description)).toList(growable: false)));
-  // }
 }
