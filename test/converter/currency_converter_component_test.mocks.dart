@@ -6,7 +6,7 @@ import 'dart:async' as _i4;
 
 import 'package:currency_converter/converter/currency_converter.dart' as _i5;
 import 'package:currency_converter/converter/data/currency_repository.dart' as _i3;
-import 'package:currency_converter/converter/model/currency.dart' as _i2;
+import 'package:currency_converter/ui/model/currency.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint

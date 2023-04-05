@@ -1,11 +1,16 @@
-import 'package:currency_converter/converter/model/currency.dart';
+import 'package:currency_converter/ui/model/currency.dart';
 
 class CurrencyConverter {
-  CurrencyConverter({required this.currency});
+  CurrencyConverter({required this.currency, required this.targetCurrencyList});
 
-  Currency currency;
+  final Currency currency;
+  final List<Currency> targetCurrencyList;
 
   double convert({required double amount, required String to}) {
     return amount * currency.exchangeRates[to]!;
+  }
+
+  DateTime date() {
+    return currency.date;
   }
 }

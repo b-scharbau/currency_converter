@@ -1,6 +1,6 @@
 import 'package:currency_converter/converter/data/currency_transformer.dart';
 import 'package:currency_converter/converter/data/model/currency.dart' as data;
-import 'package:currency_converter/converter/model/currency.dart';
+import 'package:currency_converter/ui/model/currency.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

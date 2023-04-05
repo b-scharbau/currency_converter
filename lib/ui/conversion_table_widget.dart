@@ -1,52 +1,62 @@
-import 'package:currency_converter/ui/model/conversion_table.dart';
+import 'package:currency_converter/converter/currency_converter.dart';
+import 'package:currency_converter/ui/model/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ConversionTableWidget extends StatelessWidget {
-  const ConversionTableWidget({Key? key, required this.data}) : super(key: key);
+  const ConversionTableWidget({Key? key, required this.converter, required this.from, required this.to}) : super(key: key);
 
-  final ConversionTable data;
+  final Currency from;
+  final Currency to;
+  final CurrencyConverter converter;
 
   @override
   Widget build(BuildContext context) {
     Locale locale = Localizations.localeOf(context);
 
     final fromFormat =
-    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: data.from.code);
+    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: from.code);
     final toFormat =
-    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: data.to.code);
+    NumberFormat.currency(locale: locale.toLanguageTag(), symbol: to.code);
+    final dateFormat = DateFormat('d.MM.y', locale.toLanguageTag());
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Table(
-        border: TableBorder.all(),
-        children: [
-          TableRow(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(data.from.code),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(data.to.code),
-                )
-              ]
-          ),
-          ...data.rowData.map((e) => TableRow(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Table(
+            border: TableBorder.all(),
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(fromFormat.format(e.left)),
+              TableRow(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(from.code),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(to.code),
+                    )
+                  ]
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(toFormat.format(e.right)),
-              )
-            ]
-        )).toList()
-        ],
-      ),
+              ...[1.0, 10.0, 100.0, 1000.0].map((value) => TableRow(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(fromFormat.format(value)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(toFormat.format(converter.convert(amount: value, to: to.code))),
+                      )
+                    ]
+                )
+              ).toList(),
+            ],
+          ),
+        ),
+        Text('Date: ${dateFormat.format(converter.currency.date)}')
+      ],
     );
   }
 }

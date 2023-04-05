@@ -1,6 +1,6 @@
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_converter_component.dart';
-import 'package:currency_converter/converter/model/currency.dart';
+import 'package:currency_converter/ui/model/currency.dart';
 import 'package:currency_converter/ui/currency_conversion_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +10,7 @@ class CurrencyConverterApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    CurrencyConverter converter = CurrencyConverter(currency: Currency.euro());
+    CurrencyConverter converter = CurrencyConverter(currency: Currency.euro(), targetCurrencyList: [Currency.dollar(), Currency.yen()]);
 
     return MaterialApp(
       title: 'Currency Converter',

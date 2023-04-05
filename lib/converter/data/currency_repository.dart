@@ -1,14 +1,14 @@
 import 'package:currency_converter/converter/data/currency_transformer.dart';
 import 'package:currency_converter/converter/data/data_source.dart';
-import 'package:currency_converter/converter/model/currency.dart';
+import 'package:currency_converter/ui/model/currency.dart';
 
 
 class CurrencyRepository {
   final Set<Currency> _currencyList = { Currency.dollar(), Currency.euro(), Currency.yen() };
 
-  DataSource localDataSource;
+  // DataSource localDataSource;
 
-  CurrencyRepository(this.localDataSource);
+  CurrencyRepository();
 
   Future<Currency> getCurrencyForCode(String code) async {
     var currency = _currencyList.where(
@@ -17,16 +17,17 @@ class CurrencyRepository {
     if (currency.isNotEmpty) {
       return currency.first;
     }
+    return _currencyList.first;
 
-    var transformer = CurrencyTransformer();
-    var newCurrency = transformer.transform(await localDataSource.getCurrencyByCode(code));
-
-    _currencyList.add(newCurrency);
-    return newCurrency;
+    // var transformer = CurrencyTransformer();
+    // var newCurrency = transformer.transform(await localDataSource.getCurrencyByCode(code));
+    //
+    // _currencyList.add(newCurrency);
+    // return newCurrency;
   }
 
   Future<List<Currency>> getCurrencies() async {
-    return _currencyList.toList(growable: false);
+    return _currencyList.toList(growable: true);
   }
 }
 
