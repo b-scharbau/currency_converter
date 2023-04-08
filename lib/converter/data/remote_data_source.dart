@@ -2,15 +2,28 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:currency_converter/converter/data/data_source.dart';
-import 'package:currency_converter/ui/model/currency.dart';
+import 'package:currency_converter/model/currency.dart';
 
 import 'package:http/http.dart' as http;
 
 class RemoteDataSource implements DataSource {
   @override
-  Future<List<Currency>> getCurrencies() {
-    // TODO: implement getCurrencies
-    throw UnimplementedError();
+  Future<List<Currency>> getCurrencies() async {
+    var response = await http.get(Uri.parse('https://currency-api.bscharbau.com/symbols'));
+
+    if (response.statusCode == 200) {
+      var currencyList = jsonDecode(response.body)['symbols'];
+      return List.generate(currencyList.length, (i) {
+        return Currency(
+            code: currencyList[i]['symbol'],
+            date: DateTime.parse(currencyList[i]['date']),
+            description: currencyList[i]['description'],
+            exchangeRates: {}
+        );
+      });
+    } else {
+      throw Exception('Could not retrieve currency information');
+    }
   }
 
   @override

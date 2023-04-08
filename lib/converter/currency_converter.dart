@@ -1,4 +1,4 @@
-import 'package:currency_converter/ui/model/currency.dart';
+import 'package:currency_converter/model/currency.dart';
 
 class CurrencyConverter {
   CurrencyConverter({required this.currency, required this.targetCurrencyList});

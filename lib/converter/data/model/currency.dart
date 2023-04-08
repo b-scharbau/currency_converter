@@ -95,4 +95,14 @@ class Currency {
                   exchangeRates: []),
               rate: 0.00744)
         ];
+
+  Map<String, Object?> toMap() {
+    var map = <String, Object?>{
+      'code': code,
+      'date': date.millisecondsSinceEpoch,
+      'description': description
+    };
+
+    return map;
+  }
 }

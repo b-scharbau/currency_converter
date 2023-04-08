@@ -1,6 +1,6 @@
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_converter_component.dart';
-import 'package:currency_converter/ui/model/currency.dart';
+import 'package:currency_converter/model/currency.dart';
 import 'package:currency_converter/ui/conversion_table_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

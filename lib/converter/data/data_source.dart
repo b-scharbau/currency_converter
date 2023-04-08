@@ -1,5 +1,5 @@
 
-import 'package:currency_converter/ui/model/currency.dart';
+import 'package:currency_converter/model/currency.dart';
 
 abstract class DataSource {
   Future<List<Currency>> getCurrencies();
