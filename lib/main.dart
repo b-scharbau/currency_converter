@@ -1,3 +1,4 @@
+import 'package:currency_converter/converter/converter_factory.dart';
 import 'package:currency_converter/converter/data/currency_repository.dart';
 import 'package:currency_converter/converter/data/local_data_source.dart';
 import 'package:currency_converter/converter/data/model/currency.dart';
@@ -38,7 +39,14 @@ void main() async {
   final localDataSource = LocalDataSource(db: database);
   final remoteDataSource = RemoteDataSource();
 
-  final repository = CurrencyRepository(localDataSource: localDataSource, remoteDataSource: remoteDataSource);
+  final repository = CurrencyRepository(
+      localDataSource: localDataSource,
+      remoteDataSource: remoteDataSource
+  );
+  final factory = ConverterFactory();
 
-  runApp(CurrencyConverterApp(repository: repository));
+  runApp(CurrencyConverterApp(
+      factory: factory,
+      repository: repository
+  ));
 }

@@ -1,22 +1,44 @@
-import 'package:currency_converter/converter/data/data_source.dart';
+import 'package:currency_converter/converter/data/local_data_source.dart';
+import 'package:currency_converter/converter/data/remote_data_source.dart';
 import 'package:currency_converter/model/currency.dart';
 
+import 'dart:developer' as developer;
 
 class CurrencyRepository {
   final Set<Currency> _currencyList = {  };
 
-  final DataSource localDataSource;
-  final DataSource remoteDataSource;
+  final LocalDataSource localDataSource;
+  final RemoteDataSource remoteDataSource;
 
-  CurrencyRepository({required this.localDataSource, required this.remoteDataSource});
+  CurrencyRepository({
+    required this.localDataSource,
+    required this.remoteDataSource
+  });
 
   Future<Currency> getCurrencyForCode(String code) async {
-    late final Currency currency;
+    late Currency currency;
+
     try {
-      currency = await  remoteDataSource.getCurrencyByCode(code);
+      currency = await localDataSource.getCurrencyByCode(code);
+
+      DateTime date = DateTime.now();
+      date = date.subtract(const Duration(days: 1));
+
+      if (currency.date.isBefore(date)) {
+        try {
+          currency = await _getRemoteCurrency(code);
+        } catch(e) {
+          developer.log("Couldn't fetch new currency data from backend");
+        }
+      }
     } catch(e) {
-      currency = await  localDataSource.getCurrencyByCode(code);
+      try {
+        currency = await _getRemoteCurrency(code);
+      } catch(e) {
+        developer.log("Couldn't fetch new currency data from backend");
+      }
     }
+
     return currency;
   }
 
@@ -34,5 +56,13 @@ class CurrencyRepository {
 
     return _currencyList.toList();
   }
-}
 
+  Future<Currency> _getRemoteCurrency(String code) async {
+    late Currency currency;
+
+    currency = await remoteDataSource.getCurrencyByCode(code);
+    localDataSource.updateCurrency(currency);
+
+    return currency;
+  }
+}

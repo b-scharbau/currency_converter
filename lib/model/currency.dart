@@ -41,4 +41,14 @@ class Currency {
         date = DateTime(2022, 6, 17),
         description = 'Japanese Yen',
         exchangeRates = {'EUR': 0.007086, 'JPY': 1.0, 'USD': 0.00744};
+
+  Map<String, Object?> toMap() {
+    var map = <String, Object?>{
+      'code': code,
+      'date': date.millisecondsSinceEpoch,
+      'description': description
+    };
+
+    return map;
+  }
 }

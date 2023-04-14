@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:currency_converter/converter/data/data_source.dart';
 import 'package:currency_converter/model/currency.dart';
 
 import 'package:http/http.dart' as http;
 
-class RemoteDataSource implements DataSource {
-  @override
+class RemoteDataSource {
   Future<List<Currency>> getCurrencies() async {
     var response = await http.get(Uri.parse('https://currency-api.bscharbau.com/symbols'));
 
@@ -26,7 +24,6 @@ class RemoteDataSource implements DataSource {
     }
   }
 
-  @override
   Future<Currency> getCurrencyByCode(String code) async {
     var response = await http.get(Uri.parse('https://currency-api.bscharbau.com/symbols/$code'));
 
