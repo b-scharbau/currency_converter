@@ -55,7 +55,7 @@ class ConversionTableWidget extends StatelessWidget {
             ],
           ),
         ),
-        Text('Date: ${dateFormat.format(converter.currency.date)}')
+        Text('Exchange rate from ${dateFormat.format(converter.currency.date)}')
       ],
     );
   }

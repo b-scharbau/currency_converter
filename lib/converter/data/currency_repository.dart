@@ -15,11 +15,13 @@ class CurrencyRepository {
     required this.remoteDataSource
   });
 
-  Future<Currency> getCurrencyForCode(String code) async {
+  Stream<Currency> getCurrencyForCode(String code) async* {
     late Currency currency;
 
     try {
       currency = await localDataSource.getCurrencyByCode(code);
+
+      yield currency;
 
       DateTime date = DateTime.now();
       date = date.subtract(const Duration(days: 1));
@@ -27,6 +29,7 @@ class CurrencyRepository {
       if (currency.date.isBefore(date)) {
         try {
           currency = await _getRemoteCurrency(code);
+          yield currency;
         } catch(e) {
           developer.log("Couldn't fetch new currency data from backend");
         }
@@ -34,12 +37,11 @@ class CurrencyRepository {
     } catch(e) {
       try {
         currency = await _getRemoteCurrency(code);
+        yield currency;
       } catch(e) {
         developer.log("Couldn't fetch new currency data from backend");
       }
     }
-
-    return currency;
   }
 
   Future<List<Currency>> getCurrencies() async {

@@ -1,5 +1,6 @@
 import 'package:currency_converter/converter/currency_converter.dart';
 import 'package:currency_converter/converter/currency_converter_component.dart';
+import 'package:currency_converter/converter/loading_event.dart';
 import 'package:currency_converter/model/currency.dart';
 import 'package:currency_converter/ui/conversion_table_widget.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,33 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: StreamBuilder<LoadingEvent>(
+            stream: widget.component.loadingEventObservable,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final event = snapshot.data;
+
+                switch(event!.status) {
+                  case LoadingStatus.loading:
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(widget.title),
+                        const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: CircularProgressIndicator(
+                            color: Colors.lightBlueAccent,
+                          ),
+                        ),
+                      ],
+                    );
+                  default:
+                    return Text(widget.title);
+                }
+              }
+              return Text(widget.title);
+            }
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -139,7 +166,7 @@ class _CurrencyConversionPageState extends State<CurrencyConversionPage> {
                             });
                           }
                         },
-                        child: const Text('convert')),
+                        child: const Text('Convert')),
                   ],
                 ),
               ),
